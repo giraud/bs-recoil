@@ -1,0 +1,24 @@
+{
+  "name": "bs-recoil",
+  "version": "1.0.0",
+  "description": "ReasonML bindings to recoil",
+  "keywords": ["recoil", "reasonml"],
+  "author": "Herve Giraud <giraud.contact@yahoo.fr>",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "build": "bsb -make-world",
+    "watch": "bsb -make-world -w",
+    "dev": "parcel example/index.html"
+  },
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "reason-react": "^0.8.0",
+    "recoil": "^0.0.7"
+  },
+  "devDependencies": {
+    "bs-platform": "^7.3.2",
+    "parcel-bundler": "^1.12.3"
+  }
+}
