@@ -1,0 +1,11 @@
+.nvmrc
+.merlin
+/.idea
+/.cache
+/.vscode
+*.tgz
+*.iml
+*.lock
+/example
+/lib
+/dist

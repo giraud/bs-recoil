@@ -1,11 +1,11 @@
 {
   "name": "bs-recoil",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "ReasonML bindings to recoil",
   "keywords": ["recoil", "reasonml"],
   "author": "Herve Giraud <giraud.contact@yahoo.fr>",
   "license": "MIT",
-  "main": "index.js",
+  "main": "Recoil.js",
   "scripts": {
     "build": "bsb -make-world",
     "watch": "bsb -make-world -w",
