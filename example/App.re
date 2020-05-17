@@ -5,40 +5,44 @@ let getId = () => {
   id^;
 };
 
-type todo = {
-  id: int,
-  text: string,
-  isComplete: bool,
+module Todo = {
+  type t = {
+    id: int,
+    text: string,
+    isComplete: bool,
+  };
 };
 
-type todoStatus =
-  | ShowAll
-  | ShowCompleted
-  | ShowUncompleted;
+module TodoStatus = {
+  type t =
+    | ShowAll
+    | ShowCompleted
+    | ShowUncompleted;
 
-let statusToString =
-  fun
-  | ShowAll => "Show All"
-  | ShowCompleted => "Show Completed"
-  | ShowUncompleted => "Show Uncompleted";
+  let toString =
+    fun
+    | ShowAll => "Show All"
+    | ShowCompleted => "Show Completed"
+    | ShowUncompleted => "Show Uncompleted";
 
-let statusFromString =
-  fun
-  | "Show Completed" => ShowCompleted
-  | "Show Uncompleted" => ShowUncompleted
-  | _ => ShowAll;
+  let fromString =
+    fun
+    | "Show Completed" => ShowCompleted
+    | "Show Uncompleted" => ShowUncompleted
+    | _ => ShowAll;
+};
 
 // Atoms
 
-let todoListState: Recoil.Atom.t(array(todo)) =
+let todoListState: Recoil.Atom.t(array(Todo.t)) =
   Recoil.Atom.make({key: "todoListState", default: [||]});
 let todoListFilterState =
-  Recoil.Atom.make({key: "todoListFilterState", default: ShowAll});
+  Recoil.Atom.make({key: "todoListFilterState", default: TodoStatus.ShowAll});
 
 // Selectors
 
 let filteredTodoListState =
-  Recoil.Selector.make({
+  Recoil.Selector.makeGet({
     key: "filteredTodoListState",
     get: ({get}) => {
       let list = get(. todoListState);
@@ -127,21 +131,23 @@ module TodoListFilters = {
 
     let updateFilter = event => {
       let value: string = event->ReactEvent.Form.target##value;
-      setFilter(. statusFromString(value));
+      setFilter(. TodoStatus.fromString(value));
     };
 
-    <>
-      "Filter:"->React.string
-      <select value={filter->statusToString} onChange=updateFilter>
-        {[|ShowAll, ShowCompleted, ShowUncompleted|]
-         ->Belt.Array.mapWithIndex((i, opt) =>
-             <option key={string_of_int(i)} value={statusToString(opt)}>
-               {opt->statusToString->React.string}
-             </option>
-           )
-         ->React.array}
-      </select>
-    </>;
+    TodoStatus.(
+      <>
+        "Filter:"->React.string
+        <select value={filter->toString} onChange=updateFilter>
+          {[|ShowAll, ShowCompleted, ShowUncompleted|]
+           ->Belt.Array.map(opt =>
+               <option key={opt->toString} value={opt->toString}>
+                 {opt->toString->React.string}
+               </option>
+             )
+           ->React.array}
+        </select>
+      </>
+    );
   };
 };
 

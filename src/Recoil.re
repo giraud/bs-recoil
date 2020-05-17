@@ -16,28 +16,32 @@ module Atom = {
 
 module Selector = {
   type t('a);
-  type getProps = {get: 'a. (. Atom.t('a)) => 'a};
 
-  type setProps = {
-    get: 'a. (. Atom.t('a)) => 'a,
-    set: 'a. (. Atom.t('a), 'a) => unit,
+  module Props = {
+    type get = {get: 'a. (. Atom.t('a)) => 'a};
+
+    type set = {
+      get: 'a. (. Atom.t('a)) => 'a,
+      set: 'a. (. Atom.t('a), 'a) => unit,
+    };
   };
 
-  type init('a) = {
+  type initGet('a) = {
     key: string,
-    get: getProps => 'a,
+    get: Props.get => 'a,
   };
 
-  type initSetter('a) = {
+  type initGetSet('a) = {
     key: string,
-    get: getProps => 'a,
-    set: (setProps, 'a) => unit,
+    get: Props.get => 'a,
+    set: (Props.set, 'a) => unit,
   };
-
-  [@bs.module "recoil"] external make: init('a) => Atom.t('a) = "selector";
 
   [@bs.module "recoil"]
-  external makeWithSetter: initSetter('a) => Atom.t('a) = "selector";
+  external makeGet: initGet('a) => Atom.t('a) = "selector";
+
+  [@bs.module "recoil"]
+  external makeGetSet: initGetSet('a) => Atom.t('a) = "selector";
 };
 
 [@bs.module "recoil"]
