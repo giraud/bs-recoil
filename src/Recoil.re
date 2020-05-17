@@ -1,5 +1,6 @@
 module Root = {
-  [@bs.module "recoil"] [@react.component] external make: (~children: React.element) => React.element = "RecoilRoot";
+  [@bs.module "recoil"] [@react.component]
+  external make: (~children: React.element) => React.element = "RecoilRoot";
 };
 
 module Atom = {
@@ -14,24 +15,36 @@ module Atom = {
 };
 
 module Selector = {
-  type t;
+  type t('a);
+  type getProps = {get: 'a. (. Atom.t('a)) => 'a};
 
-  // how to zero cost and type safe ?
-  let apply = [%raw {| function(g,a) { return g(a); } |}];
-  external unsafeAtom: 'a => Atom.t('b) = "%identity";
-
-  type init('a, 'b) = {
-    key: string,
-    get: 'b => 'a,
+  type setProps = {
+    get: 'a. (. Atom.t('a)) => 'a,
+    set: 'a. (. Atom.t('a), 'a) => unit,
   };
 
-  [@bs.module "recoil"] external makeGetter: init('a, 'b) => t = "selector";
+  type init('a) = {
+    key: string,
+    get: getProps => 'a,
+  };
+
+  type initSetter('a) = {
+    key: string,
+    get: getProps => 'a,
+    set: (setProps, 'a) => unit,
+  };
+
+  [@bs.module "recoil"] external make: init('a) => Atom.t('a) = "selector";
+
+  [@bs.module "recoil"]
+  external makeWithSetter: initSetter('a) => Atom.t('a) = "selector";
 };
 
-type stateSetter('a) = (. 'a) => unit;
-[@bs.module "recoil"] external useState: Atom.t('a) => ('a, stateSetter('a)) = "useRecoilState";
+[@bs.module "recoil"]
+external useState: Atom.t('a) => ('a, (. 'a) => unit) = "useRecoilState";
 
 [@bs.module "recoil"] external useValue: Atom.t('a) => 'a = "useRecoilValue";
 
-type setter('a) = ((. 'a) => 'a) => unit;
-[@bs.module "recoil"] external useSetState: Atom.t('a) => setter('a) = "useSetRecoilState";
+type setter('a) = (. ('a => 'a)) => unit;
+[@bs.module "recoil"]
+external useSetState: Atom.t('a) => setter('a) = "useSetRecoilState";
