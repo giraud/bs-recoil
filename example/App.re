@@ -55,6 +55,22 @@ let filteredTodoListState =
     },
   });
 
+let todoListStatsState =
+  Recoil.Selector.makeGet({
+    key: "todoListStatsState",
+    get: ({get}) => {
+      let todoList = get(. filteredTodoListState);
+      open Belt.Array;
+
+      let totalNum = todoList->length;
+      let totalCompletedNum = todoList->keep(item => item.isComplete)->length;
+      let totalUncompletedNum = totalNum - totalCompletedNum;
+      let percentCompleted = totalNum === 0 ? 0 : totalCompletedNum / totalNum;
+
+      (totalNum, totalCompletedNum, totalUncompletedNum, percentCompleted);
+    },
+  });
+
 // Components
 
 module TodoItemCreator = {
@@ -151,6 +167,37 @@ module TodoListFilters = {
   };
 };
 
+module TodoStats = {
+  [@react.component]
+  let make = () => {
+    let (totalNum, totalCompletedNum, totalUncompletedNum, percentCompleted) =
+      Recoil.useValue(todoListStatsState);
+    let formattedPercentCompleted =
+      Js.Math.round(Js.Int.toFloat(percentCompleted * 100));
+
+    <ul>
+      <li>
+        {("Total items: " ++ Js.Int.toString(totalNum))->React.string}
+      </li>
+      <li>
+        {("Items completed: " ++ Js.Int.toString(totalCompletedNum))
+         ->React.string}
+      </li>
+      <li>
+        {("Items not completed: " ++ Js.Int.toString(totalUncompletedNum))
+         ->React.string}
+      </li>
+      <li>
+        {(
+           "Percent completed: "
+           ++ Js.Float.toString(formattedPercentCompleted)
+         )
+         ->React.string}
+      </li>
+    </ul>;
+  };
+};
+
 module TodoList = {
   [@react.component]
   let make = () => {
@@ -159,6 +206,7 @@ module TodoList = {
     <>
       <TodoItemCreator />
       <TodoListFilters />
+      <TodoStats />
       {todoList
        ->Belt.Array.map(item =>
            <TodoItem key={string_of_int(item.id)} item />
