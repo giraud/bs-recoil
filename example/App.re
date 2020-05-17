@@ -69,7 +69,6 @@ module TodoItemCreator = {
     let onChange = e => {
       let text: string = e->ReactEvent.Form.target##value;
       setInputValue(_ => text);
-
     };
 
     <div>
