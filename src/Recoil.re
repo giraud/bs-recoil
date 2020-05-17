@@ -13,6 +13,21 @@ module Atom = {
   [@bs.module "recoil"] external make: init('a) => t('a) = "atom";
 };
 
+module Selector = {
+  type t;
+
+  // how to zero cost and type safe ?
+  let apply = [%raw {| function(g,a) { return g(a); } |}];
+  external unsafeAtom: 'a => Atom.t('b) = "%identity";
+
+  type init('a, 'b) = {
+    key: string,
+    get: 'b => 'a,
+  };
+
+  [@bs.module "recoil"] external makeGetter: init('a, 'b) => t = "selector";
+};
+
 type stateSetter('a) = (. 'a) => unit;
 [@bs.module "recoil"] external useState: Atom.t('a) => ('a, stateSetter('a)) = "useRecoilState";
 
