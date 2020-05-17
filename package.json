@@ -1,6 +1,6 @@
 {
   "name": "bs-recoil",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "ReasonML bindings to recoil",
   "keywords": ["recoil", "reasonml"],
   "author": "Herve Giraud <giraud.contact@yahoo.fr>",
