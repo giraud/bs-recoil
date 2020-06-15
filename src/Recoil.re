@@ -1,15 +1,18 @@
 module Atom = {
   type t('a);
 
-  type init('a) = {
+  [@bs.deriving abstract]
+  type value('a) = {
     key: string,
     default: 'a,
+    [@bs.as "persistence_UNSTABLE"] [@bs.optional]
+    persistence: string,
   };
 
-  [@bs.module "recoil"] external make: init('a) => t('a) = "atom";
+  [@bs.module "recoil"] external make: value('a) => t('a) = "atom";
 
   module Family = {
-    [@bs.module "recoil"] external make: init('a) => (. 'familyId) => t('a) = "atomFamily";
+    [@bs.module "recoil"] external make: value('a) => (. 'familyId) => t('a) = "atomFamily";
   };
 };
 
@@ -25,37 +28,31 @@ module Selector = {
     };
   };
 
-  type initGet('a) = {
+  [@bs.deriving abstract]
+  type value('a) = {
     key: string,
     get: Props.get => 'a,
-  };
-
-  type initGetSet('a) = {
-    key: string,
-    get: Props.get => 'a,
+    [@bs.optional]
     set: (Props.set, 'a) => unit,
   };
 
   module Family = {
-    type initGet('param, 'a) = {
+    [@bs.deriving abstract]
+    type value('param, 'a) = {
       key: string,
       get: (. 'param) => (. Props.get) => 'a,
-    };
-
-    type initGetSet('param, 'a) = {
-      key: string,
-      get: (. 'param) => (. Props.get) => 'a,
+      [@bs.optional]
       set: (. 'param) => (. Props.set, 'a) => unit,
     };
 
-    [@bs.module "recoil"] external makeGetter: initGet('param, 'a) => (. 'param) => Atom.t('a) = "selectorFamily";
+    [@bs.module "recoil"] external makeGetter: value('param, 'a) => (. 'param) => Atom.t('a) = "selectorFamily";
 
-    [@bs.module "recoil"] external makeSetter: initGetSet('param, 'a) => (. 'param) => Atom.t('a) = "selectorFamily";
+    [@bs.module "recoil"] external makeSetter: value('param, 'a) => (. 'param) => Atom.t('a) = "selectorFamily";
   };
 
-  [@bs.module "recoil"] external makeGetter: initGet('a) => Atom.t('a) = "selector";
+  [@bs.module "recoil"] external makeGetter: value('a) => Atom.t('a) = "selector";
 
-  [@bs.module "recoil"] external makeSetter: initGetSet('a) => Atom.t('a) = "selector";
+  [@bs.module "recoil"] external makeSetter: value('a) => Atom.t('a) = "selector";
 };
 
 [@bs.module "recoil"] external useState: Atom.t('a) => ('a, (. 'a) => unit) = "useRecoilState";

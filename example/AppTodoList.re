@@ -34,40 +34,48 @@ module TodoStatus = {
 
 // Atoms
 
-let todoListState: Recoil.Atom.t(array(Todo.t)) = Recoil.Atom.make({key: "todoListState", default: [||]});
-let todoListFilterState = Recoil.Atom.make({key: "todoListFilterState", default: TodoStatus.ShowAll});
+let todoListState: Recoil.Atom.t(array(Todo.t)) =
+  Recoil.Atom.value(~key="todoListState", ~default=[||], ())->Recoil.Atom.make;
+let todoListFilterState =
+  Recoil.Atom.value(~key="todoListFilterState", ~default=TodoStatus.ShowAll, ())->Recoil.Atom.make;
 
 // Selectors
 
 let filteredTodoListState =
-  Recoil.Selector.makeGetter({
-    key: "filteredTodoListState",
-    get: ({get}) => {
-      let list = get(. todoListState);
-      let filter = get(. todoListFilterState);
-      switch (filter) {
-      | ShowCompleted => list->Belt.Array.keep(item => item.isComplete)
-      | ShowUncompleted => list->Belt.Array.keep(item => !item.isComplete)
-      | ShowAll => list
-      };
-    },
-  });
+  Recoil.Selector.value(
+    ~key="filteredTodoListState",
+    ~get=
+      ({get}) => {
+        let list = get(. todoListState);
+        let filter = get(. todoListFilterState);
+        switch (filter) {
+        | ShowCompleted => list->Belt.Array.keep(item => item.isComplete)
+        | ShowUncompleted => list->Belt.Array.keep(item => !item.isComplete)
+        | ShowAll => list
+        };
+      },
+    (),
+  )
+  ->Recoil.Selector.makeGetter;
 
 let todoListStatsState =
-  Recoil.Selector.makeGetter({
-    key: "todoListStatsState",
-    get: ({get}) => {
-      let todoList = get(. filteredTodoListState);
-      open Belt.Array;
+  Recoil.Selector.value(
+    ~key="todoListStatsState",
+    ~get=
+      ({get}) => {
+        let todoList = get(. filteredTodoListState);
+        open Belt.Array;
 
-      let totalNum = todoList->length;
-      let totalCompletedNum = todoList->keep(item => item.isComplete)->length;
-      let totalUncompletedNum = totalNum - totalCompletedNum;
-      let percentCompleted = totalNum === 0 ? 0 : totalCompletedNum / totalNum;
+        let totalNum = todoList->length;
+        let totalCompletedNum = todoList->keep(item => item.isComplete)->length;
+        let totalUncompletedNum = totalNum - totalCompletedNum;
+        let percentCompleted = totalNum === 0 ? 0 : totalCompletedNum / totalNum;
 
-      (totalNum, totalCompletedNum, totalUncompletedNum, percentCompleted);
-    },
-  });
+        (totalNum, totalCompletedNum, totalUncompletedNum, percentCompleted);
+      },
+    (),
+  )
+  ->Recoil.Selector.makeGetter;
 
 // Components
 
