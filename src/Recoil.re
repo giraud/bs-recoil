@@ -21,7 +21,7 @@ module Selector = {
 
     type set = {
       get: 'a. (. Atom.t('a)) => 'a,
-      set: 'a. (. Atom.t('a), 'a) => unit,
+      set: 'a. (. Atom.t('a), 'a => 'a) => unit,
     };
   };
 
@@ -48,14 +48,14 @@ module Selector = {
       set: (. 'param) => (. Props.set, 'a) => unit,
     };
 
-    [@bs.module "recoil"] external makeGet: initGet('param, 'a) => (. 'param) => Atom.t('a) = "selectorFamily";
+    [@bs.module "recoil"] external makeGetter: initGet('param, 'a) => (. 'param) => Atom.t('a) = "selectorFamily";
 
-    [@bs.module "recoil"] external makeGetSet: initGetSet('param, 'a) => (. 'param) => Atom.t('a) = "selectorFamily";
+    [@bs.module "recoil"] external makeSetter: initGetSet('param, 'a) => (. 'param) => Atom.t('a) = "selectorFamily";
   };
 
-  [@bs.module "recoil"] external makeGet: initGet('a) => Atom.t('a) = "selector";
+  [@bs.module "recoil"] external makeGetter: initGet('a) => Atom.t('a) = "selector";
 
-  [@bs.module "recoil"] external makeGetSet: initGetSet('a) => Atom.t('a) = "selector";
+  [@bs.module "recoil"] external makeSetter: initGetSet('a) => Atom.t('a) = "selector";
 };
 
 [@bs.module "recoil"] external useState: Atom.t('a) => ('a, (. 'a) => unit) = "useRecoilState";

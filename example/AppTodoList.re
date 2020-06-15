@@ -34,15 +34,13 @@ module TodoStatus = {
 
 // Atoms
 
-let todoListState: Recoil.Atom.t(array(Todo.t)) =
-  Recoil.Atom.make({key: "todoListState", default: [||]});
-let todoListFilterState =
-  Recoil.Atom.make({key: "todoListFilterState", default: TodoStatus.ShowAll});
+let todoListState: Recoil.Atom.t(array(Todo.t)) = Recoil.Atom.make({key: "todoListState", default: [||]});
+let todoListFilterState = Recoil.Atom.make({key: "todoListFilterState", default: TodoStatus.ShowAll});
 
 // Selectors
 
 let filteredTodoListState =
-  Recoil.Selector.makeGet({
+  Recoil.Selector.makeGetter({
     key: "filteredTodoListState",
     get: ({get}) => {
       let list = get(. todoListState);
@@ -56,7 +54,7 @@ let filteredTodoListState =
   });
 
 let todoListStatsState =
-  Recoil.Selector.makeGet({
+  Recoil.Selector.makeGetter({
     key: "todoListStatsState",
     get: ({get}) => {
       let todoList = get(. filteredTodoListState);
@@ -81,9 +79,7 @@ module TodoItemCreator = {
 
     let addItem = _ =>
       setTodoList(. oldTodoList =>
-        oldTodoList->Belt.Array.concat([|
-          {id: getId(), text: inputValue, isComplete: false},
-        |])
+        oldTodoList->Belt.Array.concat([|{id: getId(), text: inputValue, isComplete: false}|])
       );
 
     let onChange = e => {
@@ -102,39 +98,23 @@ module TodoItem = {
   [@react.component]
   let make = (~item) => {
     let (todoList, setTodoList) = Recoil.useState(todoListState);
-    let index =
-      todoList
-      ->Belt.Array.getIndexBy(listItem => listItem === item)
-      ->Belt.Option.getWithDefault(-1);
+    let index = todoList->Belt.Array.getIndexBy(listItem => listItem === item)->Belt.Option.getWithDefault(-1);
 
     let editItemText = event => {
       let text: string = event->ReactEvent.Form.target##value;
-      setTodoList(.
-        todoList->Belt.Array.mapWithIndex((i, item) =>
-          i == index ? {...item, text} : item
-        ),
-      );
+      setTodoList(. todoList->Belt.Array.mapWithIndex((i, item) => i == index ? {...item, text} : item));
     };
 
     let toggleItemCompletion = _ =>
       setTodoList(.
-        todoList->Belt.Array.mapWithIndex((i, item) =>
-          i == index ? {...item, isComplete: !item.isComplete} : item
-        ),
+        todoList->Belt.Array.mapWithIndex((i, item) => i == index ? {...item, isComplete: !item.isComplete} : item),
       );
 
-    let deleteItem = _ =>
-      setTodoList(.
-        todoList->Belt.Array.keepWithIndex((_, i) => i != index),
-      );
+    let deleteItem = _ => setTodoList(. todoList->Belt.Array.keepWithIndex((_, i) => i != index));
 
     <div>
       <input type_="text" value={item.text} onChange=editItemText />
-      <input
-        type_="checkbox"
-        checked={item.isComplete}
-        onChange=toggleItemCompletion
-      />
+      <input type_="checkbox" checked={item.isComplete} onChange=toggleItemCompletion />
       <button onClick=deleteItem> "X"->React.string </button>
     </div>;
   };
@@ -156,9 +136,7 @@ module TodoListFilters = {
         <select value={filter->toString} onChange=updateFilter>
           {[|ShowAll, ShowCompleted, ShowUncompleted|]
            ->Belt.Array.map(opt =>
-               <option key={opt->toString} value={opt->toString}>
-                 {opt->toString->React.string}
-               </option>
+               <option key={opt->toString} value={opt->toString}> {opt->toString->React.string} </option>
              )
            ->React.array}
         </select>
@@ -170,30 +148,14 @@ module TodoListFilters = {
 module TodoStats = {
   [@react.component]
   let make = () => {
-    let (totalNum, totalCompletedNum, totalUncompletedNum, percentCompleted) =
-      Recoil.useValue(todoListStatsState);
-    let formattedPercentCompleted =
-      Js.Math.round(Js.Int.toFloat(percentCompleted * 100));
+    let (totalNum, totalCompletedNum, totalUncompletedNum, percentCompleted) = Recoil.useValue(todoListStatsState);
+    let formattedPercentCompleted = Js.Math.round(Js.Int.toFloat(percentCompleted * 100));
 
     <ul>
-      <li>
-        {("Total items: " ++ Js.Int.toString(totalNum))->React.string}
-      </li>
-      <li>
-        {("Items completed: " ++ Js.Int.toString(totalCompletedNum))
-         ->React.string}
-      </li>
-      <li>
-        {("Items not completed: " ++ Js.Int.toString(totalUncompletedNum))
-         ->React.string}
-      </li>
-      <li>
-        {(
-           "Percent completed: "
-           ++ Js.Float.toString(formattedPercentCompleted)
-         )
-         ->React.string}
-      </li>
+      <li> {("Total items: " ++ Js.Int.toString(totalNum))->React.string} </li>
+      <li> {("Items completed: " ++ Js.Int.toString(totalCompletedNum))->React.string} </li>
+      <li> {("Items not completed: " ++ Js.Int.toString(totalUncompletedNum))->React.string} </li>
+      <li> {("Percent completed: " ++ Js.Float.toString(formattedPercentCompleted))->React.string} </li>
     </ul>;
   };
 };
@@ -206,8 +168,6 @@ let make = () => {
     <TodoItemCreator />
     <TodoListFilters />
     <TodoStats />
-    {todoList
-     ->Belt.Array.map(item => <TodoItem key={string_of_int(item.id)} item />)
-     ->React.array}
+    {todoList->Belt.Array.map(item => <TodoItem key={string_of_int(item.id)} item />)->React.array}
   </>;
 };

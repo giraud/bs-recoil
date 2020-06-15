@@ -21,14 +21,13 @@ module List = {
   let make = (~id, ~items) => {
     let listAtom = listFamily(. id);
     let rwItemSelector =
-      Recoil.Selector.Family.makeGetSet({
+      Recoil.Selector.Family.makeSetter({
         key: "ListSelection",
         get: (. item) => (. {get}) => get(. listAtom)->isSelected(item),
         set:
           (. item) =>
-            (. {get, set}, selected) => {
-              let x = get(. listAtom);
-              set(. listAtom, selected ? x->add(item) : x->remove(item));
+            (. {set, _}, selected) => {
+              set(. listAtom, previous => selected ? previous->add(item) : previous->remove(item));
             },
       });
 
