@@ -2,7 +2,40 @@
 
 Experimental ReasonML bindings to [recoil](https://github.com/facebookexperimental/recoil).
 
-## Usage
+## Usage 
+
+Create an atom:
+
+```reason
+let todoListState = Recoil.Atom.value(~key="todoListState", ~default=[||]: array(Todo.t), ())->Recoil.Atom.make;
+```
+
+Create a getter:
+```reason
+
+let filteredTodoListState =
+  Recoil.Selector.value(
+    ~key="filteredTodoListState",
+    ~get=({get}) => { ... },
+    (),
+  )
+  ->Recoil.Selector.make;
+```
+
+Create a setter:
+```reason
+
+let filteredTodoListState =
+  Recoil.Selector.value(
+    ~key="filteredTodoListState",
+    ~get=({get}) => { ... },
+    ~set=({get, set}) => { ... },
+    (),
+  )
+  ->Recoil.Selector.make;
+```
+
+## Dev
 
 - clone this directory
 - yarn install
