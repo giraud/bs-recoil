@@ -1,6 +1,8 @@
+.idea/
 .cache/
 dist/
 lib/
 node_modules/
+*.iml
 # Merlin configuring file for Vim and Emacs
 .merlin
