@@ -45,14 +45,10 @@ module Selector = {
       set: (. 'param) => (. Props.set, 'a) => unit,
     };
 
-    [@bs.module "recoil"] external makeGetter: value('param, 'a) => (. 'param) => Atom.t('a) = "selectorFamily";
-
-    [@bs.module "recoil"] external makeSetter: value('param, 'a) => (. 'param) => Atom.t('a) = "selectorFamily";
+    [@bs.module "recoil"] external make: value('param, 'a) => (. 'param) => Atom.t('a) = "selectorFamily";
   };
 
-  [@bs.module "recoil"] external makeGetter: value('a) => Atom.t('a) = "selector";
-
-  [@bs.module "recoil"] external makeSetter: value('a) => Atom.t('a) = "selector";
+  [@bs.module "recoil"] external make: value('a) => Atom.t('a) = "selector";
 };
 
 [@bs.module "recoil"] external useState: Atom.t('a) => ('a, (. 'a) => unit) = "useRecoilState";

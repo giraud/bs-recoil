@@ -56,7 +56,7 @@ let filteredTodoListState =
       },
     (),
   )
-  ->Recoil.Selector.makeGetter;
+  ->Recoil.Selector.make;
 
 let todoListStatsState =
   Recoil.Selector.value(
@@ -75,7 +75,7 @@ let todoListStatsState =
       },
     (),
   )
-  ->Recoil.Selector.makeGetter;
+  ->Recoil.Selector.make;
 
 // Components
 

@@ -32,7 +32,7 @@ module List = {
             },
         (),
       )
-      ->Recoil.Selector.Family.makeSetter;
+      ->Recoil.Selector.Family.make;
 
     <div>
       {("List " ++ id)->React.string}
