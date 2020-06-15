@@ -9,7 +9,9 @@ module Atom = {
 
   [@bs.module "recoil"] external make: init('a) => t('a) = "atom";
 
-  [@bs.module "recoil"] external makeFamily: init('a) => (. 'familyId) => t('a) = "atomFamily";
+  module Family = {
+    [@bs.module "recoil"] external make: init('a) => (. 'familyId) => t('a) = "atomFamily";
+  };
 };
 
 module Selector = {

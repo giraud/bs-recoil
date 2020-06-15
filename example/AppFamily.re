@@ -1,9 +1,7 @@
-let listFamily =
-  Recoil.Atom.makeFamily({key: "List", default: ([||]: array(string))});
+let listFamily = Recoil.Atom.Family.make({key: "List", default: ([||]: array(string))});
 
 // Helpers
-let isSelected = (items, item) =>
-  items->Belt.Array.getBy(i => i == item)->Belt.Option.isSome;
+let isSelected = (items, item) => items->Belt.Array.getBy(i => i == item)->Belt.Option.isSome;
 let add = (items, item) => items->Belt.Array.concat([|item|]);
 let remove = (items, item) => items->Belt.Array.keep(i => i != item);
 
@@ -12,9 +10,7 @@ module Item = {
   let make = (~item, ~atomFamily) => {
     let (selected, setSelected) = Recoil.useState(atomFamily(. item));
 
-    <li
-      onClick={_e => setSelected(. !selected)}
-      className={selected ? "bg-red" : "bg-white"}>
+    <li onClick={_e => setSelected(. !selected)} className={selected ? "bg-red" : "bg-white"}>
       item->React.string
     </li>;
   };
@@ -38,13 +34,7 @@ module List = {
 
     <div>
       {("List " ++ id)->React.string}
-      <ul>
-        {items
-         ->Belt.Array.map(item =>
-             <Item key=item item atomFamily=rwItemSelector />
-           )
-         ->React.array}
-      </ul>
+      <ul> {items->Belt.Array.map(item => <Item key=item item atomFamily=rwItemSelector />)->React.array} </ul>
     </div>;
   };
 };
