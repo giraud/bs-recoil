@@ -54,6 +54,12 @@ module Selector = {
 };
 
 /**
+ Returns true if value is either an atom or selector and false otherwise.
+ */
+[@bs.module "recoil"]
+external isRecoilValue: 'a => bool = "isRecoilValue";
+
+/**
  Returns a tuple where the first element is the value of state and
  the second element is a setter function that will update the value of the given state when called.
 
@@ -72,7 +78,19 @@ external useState: Atom.t('a) => ('a, (. stateSetter('a)) => unit) = "useRecoilS
 [@bs.module "recoil"]
 external useValue: Atom.t('a) => 'a = "useRecoilValue";
 
-[@bs.module "recoil"] external useSetState: Atom.t('a) => (. stateSetter('a)) => unit = "useSetRecoilState";
+/**
+ Returns a setter function for updating the value of writeable Recoil state.
+
+ This is the recommended hook to use when a component intends to write to state without reading it.
+ */
+[@bs.module "recoil"]
+external useSetState: Atom.t('a) => (. stateSetter('a)) => unit = "useSetRecoilState";
+
+/**
+ Returns a function that will reset the value of the given state to its default value.
+ */
+[@bs.module "recoil"]
+external useResetState: Atom.t('a) => (. unit) => unit = "useResetRecoilState";
 
 module Root = Recoil_Root;
 module Logger = Recoil_Logger;
