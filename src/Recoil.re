@@ -1,3 +1,5 @@
+type stateSetter('a) = 'a => 'a;
+
 module Atom = {
   type t('a);
 
@@ -24,7 +26,7 @@ module Selector = {
 
     type set = {
       get: 'a. (. Atom.t('a)) => 'a,
-      set: 'a. (. Atom.t('a), 'a => 'a) => unit,
+      set: 'a. (. Atom.t('a), stateSetter('a)) => unit,
     };
   };
 
@@ -51,13 +53,26 @@ module Selector = {
   [@bs.module "recoil"] external make: value('a) => Atom.t('a) = "selector";
 };
 
-[@bs.module "recoil"] external useState: Atom.t('a) => ('a, (. 'a) => unit) = "useRecoilState";
+/**
+ Returns a tuple where the first element is the value of state and
+ the second element is a setter function that will update the value of the given state when called.
 
-[@bs.module "recoil"] external useValue: Atom.t('a) => 'a = "useRecoilValue";
+ This API is similar to the React useState() hook except
+ it takes a Recoil state instead of a default value as an argument.
+ */
+[@bs.module "recoil"]
+external useState: Atom.t('a) => ('a, (. stateSetter('a)) => unit) = "useRecoilState";
 
-type setter('a) = (. ('a => 'a)) => unit;
+/**
+ Returns the value of the given Recoil state.
 
-[@bs.module "recoil"] external useSetState: Atom.t('a) => setter('a) = "useSetRecoilState";
+ This is the recommended hook to use when a component intends to read state without writing to it,
+ as this hook works with both read-only state and writeable state.
+ */
+[@bs.module "recoil"]
+external useValue: Atom.t('a) => 'a = "useRecoilValue";
+
+[@bs.module "recoil"] external useSetState: Atom.t('a) => (. stateSetter('a)) => unit = "useSetRecoilState";
 
 module Root = Recoil_Root;
 module Logger = Recoil_Logger;

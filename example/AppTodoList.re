@@ -110,15 +110,15 @@ module TodoItem = {
 
     let editItemText = event => {
       let text: string = event->ReactEvent.Form.target##value;
-      setTodoList(. todoList->Belt.Array.mapWithIndex((i, item) => i == index ? {...item, text} : item));
+      setTodoList(. _ => todoList->Belt.Array.mapWithIndex((i, item) => i == index ? {...item, text} : item));
     };
 
     let toggleItemCompletion = _ =>
-      setTodoList(.
-        todoList->Belt.Array.mapWithIndex((i, item) => i == index ? {...item, isComplete: !item.isComplete} : item),
+      setTodoList(. _ =>
+        todoList->Belt.Array.mapWithIndex((i, item) => i == index ? {...item, isComplete: !item.isComplete} : item)
       );
 
-    let deleteItem = _ => setTodoList(. todoList->Belt.Array.keepWithIndex((_, i) => i != index));
+    let deleteItem = _ => setTodoList(. _ => todoList->Belt.Array.keepWithIndex((_, i) => i != index));
 
     <div>
       <input type_="text" value={item.text} onChange=editItemText />
@@ -135,7 +135,7 @@ module TodoListFilters = {
 
     let updateFilter = event => {
       let value: string = event->ReactEvent.Form.target##value;
-      setFilter(. TodoStatus.fromString(value));
+      setFilter(. _ => TodoStatus.fromString(value));
     };
 
     TodoStatus.(

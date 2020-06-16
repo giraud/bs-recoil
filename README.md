@@ -43,3 +43,5 @@ let filteredTodoListState =
 - go to http://localhost:1234
 
 example directory contains the todo app from the recoil doc
+
+Code doc is copied from recoil documentation site.

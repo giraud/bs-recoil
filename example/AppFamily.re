@@ -11,7 +11,7 @@ module Item = {
   let make = (~item, ~atom) => {
     let (selected, setSelected) = Recoil.useState(atom(. item));
 
-    <li onClick={_e => setSelected(. !selected)} className={selected ? "bg-red" : "bg-white"}>
+    <li onClick={_e => setSelected(. _ => !selected)} className={selected ? "bg-red" : "bg-white"}>
       item->React.string
     </li>;
   };
