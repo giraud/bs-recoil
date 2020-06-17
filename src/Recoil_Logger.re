@@ -4,8 +4,8 @@
 module Set = Recoil_Observer.JsSet;
 module Map = Recoil_Observer.JsMap;
 
-[@bs.val] [@bs.scope "console"] external group: string => unit = "group";
-[@bs.val] [@bs.scope "console"] external groupCollapsed: string => unit = "groupCollapsed";
+[@bs.val] [@bs.scope "console"] external group: (. string) => unit = "group";
+[@bs.val] [@bs.scope "console"] external groupCollapsed: (. string) => unit = "groupCollapsed";
 [@bs.val] [@bs.scope "console"] external groupEnd: unit => unit = "groupEnd";
 
 let formatDate = date => {
@@ -24,7 +24,7 @@ let make = (~collapsed=true) => {
     modifiedAtoms->Set.forEach(name => {
       //Js.log(e);
       let consoleGroup = collapsed ? groupCollapsed : group;
-      consoleGroup(formatDate(Js.Date.make()) ++ " " ++ name);
+      consoleGroup(. formatDate(Js.Date.make()) ++ " " ++ name);
       Js.log2("Previous:", previousAtomValues->Map.get(name));
       Js.log2("New:", atomValues->Map.get(name));
       groupEnd();

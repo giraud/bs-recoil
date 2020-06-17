@@ -7,7 +7,7 @@ module JsSet = {
 // Not defined by bucklescript
 module JsMap = {
   type t('a);
-  [@bs.send] external get: (t('a), string) => 'a = "get";
+  [@bs.send] external get: (t('a), string) => option('a) = "get";
 };
 
 type mixed;
