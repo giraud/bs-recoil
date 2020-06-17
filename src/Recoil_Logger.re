@@ -2,6 +2,7 @@
  Simple logger that uses transaction observation
  */
 module Set = Recoil_Observer.JsSet;
+module Map = Recoil_Observer.JsMap;
 
 [@bs.val] [@bs.scope "console"] external group: string => unit = "group";
 [@bs.val] [@bs.scope "console"] external groupCollapsed: string => unit = "groupCollapsed";
@@ -19,17 +20,15 @@ let formatDate = date => {
 
 [@react.component]
 let make = (~collapsed=true) => {
-  Recoil_Observer.useTransactionObservation(({modifiedAtoms, atomValues, previousAtomValues, _} as e) =>
-    modifiedAtoms
-    ->Set.values
-    ->Belt.Array.forEach(name => {
-        //Js.log(e);
-        let consoleGroup = collapsed ? groupCollapsed : group;
-        consoleGroup(formatDate(Js.Date.make()) ++ " Atom name: " ++ name);
-        Js.log2("new value", atomValues->Js.Dict.get(name));
-        Js.log2("Previous value", previousAtomValues->Js.Dict.get(name));
-        groupEnd();
-      })
+  Recoil_Observer.useTransactionObservation(({modifiedAtoms, atomValues, previousAtomValues, _} /*as e*/) =>
+    modifiedAtoms->Set.forEach(name => {
+      //Js.log(e);
+      let consoleGroup = collapsed ? groupCollapsed : group;
+      consoleGroup(formatDate(Js.Date.make()) ++ " " ++ name);
+      Js.log2("Previous:", previousAtomValues->Map.get(name));
+      Js.log2("New:", atomValues->Map.get(name));
+      groupEnd();
+    })
   );
   React.null;
 };

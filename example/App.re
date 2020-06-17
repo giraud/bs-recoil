@@ -5,6 +5,9 @@ ReactDOMRe.renderToElementWithId(
     <AppTodoList />
     <h1> "Family"->React.string </h1>
     <AppFamily />
+    <h1> "Persistence"->React.string </h1>
+    "Open the console to see messages"->React.string
+    <AppPersistence />
   </Recoil.Root>,
   "app",
 );

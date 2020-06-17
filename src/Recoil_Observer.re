@@ -1,17 +1,13 @@
-// Not defined by bucklescript !
+// Not defined by bucklescript
 module JsSet = {
   type t('a);
-  type iterable('a);
+  [@bs.send] external forEach: (t('a), 'a => unit) => unit = "forEach";
+};
 
-  [@bs.new] external make: array('a) => t('a) = "Set";
-  [@bs.get] external size: t('a) => float = "size";
-  [@bs.send] external add: (t('a), 'a) => unit = "add";
-  [@bs.send] external delete: (t('a), 'a) => unit = "delete";
-  [@bs.send] external has: (t('a), 'a) => bool = "has";
-  [@bs.send] external rawValues: t('a) => iterable('a) = "values";
-  [@bs.val] [@bs.scope "Array"] external arrayFromIterable: iterable('a) => array('a) = "from";
-
-  let values = (set: t('a)): array('a) => arrayFromIterable(rawValues(set));
+// Not defined by bucklescript
+module JsMap = {
+  type t('a);
+  [@bs.send] external get: (t('a), string) => 'a = "get";
 };
 
 type mixed;
@@ -19,9 +15,9 @@ type mixed;
 type externallyVisibleAtomInfo;
 
 type callback = {
-  atomValues: Js.Dict.t(mixed),
-  previousAtomValues: Js.Dict.t(mixed),
-  atomInfo: Js.Dict.t(externallyVisibleAtomInfo),
+  atomValues: JsMap.t(mixed),
+  previousAtomValues: JsMap.t(mixed),
+  atomInfo: JsMap.t(externallyVisibleAtomInfo),
   modifiedAtoms: JsSet.t(string),
   transactionMetadata: Js.Dict.t(mixed),
 };
