@@ -93,4 +93,5 @@ external useSetState: Atom.t('a) => (. stateSetter('a)) => unit = "useSetRecoilS
 external useResetState: Atom.t('a) => (. unit) => unit = "useResetRecoilState";
 
 module Root = Recoil_Root;
+module Observer = Recoil_Observer;
 module Logger = Recoil_Logger;
