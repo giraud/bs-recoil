@@ -27,6 +27,7 @@ module Selector = {
     type set = {
       get: 'a. (. Atom.t('a)) => 'a,
       set: 'a. (. Atom.t('a), stateSetter('a)) => unit,
+      reset: 'a. (. Atom.t('a)) => unit,
     };
   };
 
@@ -51,6 +52,42 @@ module Selector = {
   };
 
   [@bs.module "recoil"] external make: value('a) => Atom.t('a) = "selector";
+};
+
+module Loadable = {
+  type t('a, 'error);
+
+  type state('a, 'error) =
+    | HasValue('a)
+    | Loading
+    | Error('error);
+
+  let classify: t('a, 'error) => state('a, 'error) =
+    loadable => {
+      let state = Obj.magic(loadable)##state;
+      switch (state) {
+      | "hasValue" => HasValue(Obj.magic(loadable)##contents)
+      | "loading" => Loading
+      | _ => Error(Obj.magic(loadable)##contents)
+      };
+    };
+};
+
+module Snapshot = {
+  type t;
+
+  [@bs.send] external getLoadable: (t, Atom.t('a)) => Loadable.t('a, 'error) = "getLoadable";
+
+  let get = (snap, atom) => snap->getLoadable(atom)->Loadable.classify;
+};
+
+module Callback = {
+  type t = {
+    snapshot: Snapshot.t,
+    gotoSnapshot: Snapshot.t => unit,
+  };
+
+  type fn('params, 'result) = (. 'params) => 'result;
 };
 
 /**
@@ -91,6 +128,15 @@ external useSetState: Atom.t('a) => (. stateSetter('a)) => unit = "useSetRecoilS
  */
 [@bs.module "recoil"]
 external useResetState: Atom.t('a) => (. unit) => unit = "useResetRecoilState";
+
+[@bs.module "recoil"]
+external useCallback0: (Callback.t => (. 'params) => 'result) => Callback.fn('params, 'result) = "useRecoilCallback";
+
+[@bs.module "recoil"]
+external useCallback: (Snapshot.t => (. 'params) => 'result, array(string)) => Callback.fn('params, 'result) =
+  "useRecoilCallback";
+
+//[@bs.module "recoil"] external useSnapshotAndSubscribe: unit => Snapshot.t = "useRecoilSnapshotAndSubscribe";
 
 module Root = Recoil_Root;
 module Observer = Recoil_Observer;
