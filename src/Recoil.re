@@ -129,14 +129,44 @@ external useSetState: Atom.t('a) => (. stateSetter('a)) => unit = "useSetRecoilS
 [@bs.module "recoil"]
 external useResetState: Atom.t('a) => (. unit) => unit = "useResetRecoilState";
 
+/**
+ See useCallback.
+ */
 [@bs.module "recoil"]
 external useCallback0: (Callback.t => (. 'params) => 'result) => Callback.fn('params, 'result) = "useRecoilCallback";
 
+/**
+ This hook is similar to useCallback(), but will also provide an API for your callbacks to work with Recoil state.
+ */
 [@bs.module "recoil"]
 external useCallback: (Snapshot.t => (. 'params) => 'result, array(string)) => Callback.fn('params, 'result) =
   "useRecoilCallback";
 
-//[@bs.module "recoil"] external useSnapshotAndSubscribe: unit => Snapshot.t = "useRecoilSnapshotAndSubscribe";
+/**
+ This hook synchronously returns a Snapshot object during rendering and
+ subscribes the calling component for all Recoil state changes.
+ */
+[@bs.module "recoil"]
+external useSnapshot: unit => Snapshot.t = "useRecoilSnapshot";
+
+/**
+ This hook returns a callback which takes a Snapshot as a parameter and
+ will update the current <RecoilRoot> state to match this atom state.
+ */
+[@bs.module "recoil"]
+external useGotoSnapshot: unit => (. Snapshot.t) => unit = "useGotoRecoilSnapshot";
+
+type transactionObserverCb = {
+  snapshot: Snapshot.t,
+  previousSnapshot: Snapshot.t,
+};
+
+/**
+ This hook subscribes a callback to be executed every time there is a change to Recoil atom state.
+ Multiple updates may be batched together in a single transaction.
+ */
+[@bs.module "recoil"]
+external useTransactionObserver: ((. transactionObserverCb) => unit) => unit = "useRecoilTransactionObserver_UNSTABLE";
 
 module Root = Recoil_Root;
 module Observer = Recoil_Observer;

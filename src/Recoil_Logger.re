@@ -20,7 +20,7 @@ let formatDate = date => {
 
 [@react.component]
 let make = (~collapsed=true) => {
-  Recoil_Observer.useTransactionObservation(({modifiedAtoms, atomValues, previousAtomValues, _} /*as e*/) =>
+  Recoil_Observer.useTransactionObservation((. {modifiedAtoms, atomValues, previousAtomValues, _} /*as e*/) =>
     modifiedAtoms->Set.forEach(name => {
       //Js.log(e);
       let consoleGroup = collapsed ? groupCollapsed : group;

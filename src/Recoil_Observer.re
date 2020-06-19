@@ -23,4 +23,4 @@ type callback = {
 };
 
 [@bs.module "recoil"]
-external useTransactionObservation: ([@bs.uncurry] (callback => unit)) => unit = "useTransactionObservation_UNSTABLE";
+external useTransactionObservation: ((. callback) => unit) => unit = "useTransactionObservation_UNSTABLE";
