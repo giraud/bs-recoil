@@ -1,6 +1,6 @@
 # bs-recoil
 
-Experimental ReasonML bindings to [recoil](https://github.com/facebookexperimental/recoil).
+Experimental Rescript bindings to [recoil](https://github.com/facebookexperimental/recoil).
 
 ## Usage 
 
