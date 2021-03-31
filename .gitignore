@@ -1,8 +1,11 @@
 .idea/
 .cache/
+.parcel-cache/
 dist/
 lib/bs/
 node_modules/
 *.iml
+yarn-error.log
+.bsb.lock
 # Merlin configuring file for Vim and Emacs
 .merlin

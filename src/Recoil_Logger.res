@@ -1,7 +1,7 @@
 /**
  Simple logger that uses transaction observation
  */
- 
+
 module Set = Recoil_Observer.JsSet
 module Map = Recoil_Observer.JsMap
 

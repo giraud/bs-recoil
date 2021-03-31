@@ -1,8 +1,11 @@
 .nvmrc
 .merlin
+.bsb.lock
+yarn-error.log
 /.idea
 /.cache
 /.vscode
+/.parcel-cache
 *.tgz
 *.iml
 *.lock
