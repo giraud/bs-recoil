@@ -5,5 +5,5 @@
  Multiple roots may co-exist; atoms will have distinct values within each root.
  If they are nested, the innermost root will completely mask any outer roots.
  */
-@bs.module("recoil") @react.component
-external make: (~children: React.element) => React.element = "RecoilRoot";
+@module("recoil") @react.component
+external make: (~children: React.element) => React.element = "RecoilRoot"

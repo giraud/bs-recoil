@@ -1,13 +1,13 @@
 // Not defined by bucklescript
 module JsSet = {
   type t<'a>
-  @bs.send external forEach: (t<'a>, 'a => unit) => unit = "forEach"
+  @send external forEach: (t<'a>, 'a => unit) => unit = "forEach"
 }
 
 // Not defined by bucklescript
 module JsMap = {
   type t<'a>
-  @bs.send external get: (t<'a>, string) => option<'a> = "get"
+  @send external get: (t<'a>, string) => option<'a> = "get"
 }
 
 type mixed
@@ -22,5 +22,6 @@ type callback = {
   transactionMetadata: Js.Dict.t<mixed>,
 }
 
-@bs.module("recoil")
-external useTransactionObservation: ((. callback) => unit) => unit = "useTransactionObservation_UNSTABLE"
+@module("recoil")
+external useTransactionObservation: ((. callback) => unit) => unit =
+  "useTransactionObservation_UNSTABLE"

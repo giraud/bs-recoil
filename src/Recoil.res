@@ -3,18 +3,18 @@ type stateSetter<'a> = 'a => 'a
 module Atom = {
   type t<'a>
 
-  @bs.deriving(abstract)
+  @deriving(abstract)
   type value<'a> = {
     key: string,
     default: 'a,
-    @bs.as("persistence_UNSTABLE") @bs.optional
+    @as("persistence_UNSTABLE") @optional
     persistence: string,
   }
 
-  @bs.module("recoil") external make: value<'a> => t<'a> = "atom"
+  @module("recoil") external make: value<'a> => t<'a> = "atom"
 
   module Family = {
-    @bs.module("recoil") external make: value<'a> => (. 'familyId) => t<'a> = "atomFamily"
+    @module("recoil") external make: (value<'a>, . 'familyId) => t<'a> = "atomFamily"
   }
 }
 
@@ -31,27 +31,27 @@ module Selector = {
     }
   }
 
-  @bs.deriving(abstract)
+  @deriving(abstract)
   type value<'a> = {
     key: string,
     get: Props.get => 'a,
-    @bs.optional
+    @optional
     set: (Props.set, 'a) => unit,
   }
 
   module Family = {
-    @bs.deriving(abstract)
+    @deriving(abstract)
     type value<'param, 'a> = {
       key: string,
-      get: (. 'param) => (. Props.get) => 'a,
-      @bs.optional
-      set: (. 'param) => (. Props.set, 'a) => unit,
+      get: (. 'param, . Props.get) => 'a,
+      @optional
+      set: (. 'param, . Props.set, 'a) => unit,
     }
 
-    @bs.module("recoil") external make: value<'param, 'a> => (. 'param) => Atom.t<'a> = "selectorFamily"
+    @module("recoil") external make: (value<'param, 'a>, . 'param) => Atom.t<'a> = "selectorFamily"
   }
 
-  @bs.module("recoil") external make: value<'a> => Atom.t<'a> = "selector"
+  @module("recoil") external make: value<'a> => Atom.t<'a> = "selector"
 }
 
 module Loadable = {
@@ -62,21 +62,20 @@ module Loadable = {
     | Loading
     | Error('error)
 
-  let classify: t<'a, 'error> => state<'a, 'error> =
-    loadable => {
-      let state = Obj.magic(loadable)["state"]
-      switch (state) {
-      | "hasValue" => HasValue(Obj.magic(loadable)["contents"])
-      | "loading" => Loading
-      | _ => Error(Obj.magic(loadable)["contents"])
-      }
+  let classify: t<'a, 'error> => state<'a, 'error> = loadable => {
+    let state = Obj.magic(loadable)["state"]
+    switch state {
+    | "hasValue" => HasValue(Obj.magic(loadable)["contents"])
+    | "loading" => Loading
+    | _ => Error(Obj.magic(loadable)["contents"])
     }
+  }
 }
 
 module Snapshot = {
   type t
 
-  @bs.send external getLoadable: (t, Atom.t<'a>) => Loadable.t<'a, 'error> = "getLoadable"
+  @send external getLoadable: (t, Atom.t<'a>) => Loadable.t<'a, 'error> = "getLoadable"
 
   let get = (snap, atom) => snap->getLoadable(atom)->Loadable.classify
 }
@@ -93,7 +92,7 @@ module Callback = {
 /**
  Returns true if value is either an atom or selector and false otherwise.
  */
-@bs.module("recoil")
+@module("recoil")
 external isRecoilValue: 'a => bool = "isRecoilValue"
 
 /**
@@ -103,7 +102,7 @@ external isRecoilValue: 'a => bool = "isRecoilValue"
  This API is similar to the React useState() hook except
  it takes a Recoil state instead of a default value as an argument.
  */
-@bs.module("recoil")
+@module("recoil")
 external useState: Atom.t<'a> => ('a, (. stateSetter<'a>) => unit) = "useRecoilState"
 
 /**
@@ -112,7 +111,7 @@ external useState: Atom.t<'a> => ('a, (. stateSetter<'a>) => unit) = "useRecoilS
  This is the recommended hook to use when a component intends to read state without writing to it,
  as this hook works with both read-only state and writeable state.
  */
-@bs.module("recoil")
+@module("recoil")
 external useValue: Atom.t<'a> => 'a = "useRecoilValue"
 
 /**
@@ -120,41 +119,44 @@ external useValue: Atom.t<'a> => 'a = "useRecoilValue"
 
  This is the recommended hook to use when a component intends to write to state without reading it.
  */
-@bs.module("recoil")
-external useSetState: Atom.t<'a> => (. stateSetter<'a>) => unit = "useSetRecoilState"
+@module("recoil")
+external useSetState: (Atom.t<'a>, . stateSetter<'a>) => unit = "useSetRecoilState"
 
 /**
  Returns a function that will reset the value of the given state to its default value.
  */
-@bs.module("recoil")
-external useResetState: Atom.t<'a> => (. unit) => unit = "useResetRecoilState"
+@module("recoil")
+external useResetState: (Atom.t<'a>, . unit) => unit = "useResetRecoilState"
 
 /**
  See useCallback.
  */
-@bs.module("recoil")
-external useCallback0: (Callback.t => (. 'params) => 'result) => Callback.fn<'params, 'result> = "useRecoilCallback"
+@module("recoil")
+external useCallback0: ((Callback.t, . 'params) => 'result) => Callback.fn<'params, 'result> =
+  "useRecoilCallback"
 
 /**
  This hook is similar to useCallback(), but will also provide an API for your callbacks to work with Recoil state.
  */
-@bs.module("recoil")
-external useCallback: (Snapshot.t => (. 'params) => 'result, array<string>) => Callback.fn<'params, 'result> =
-  "useRecoilCallback"
+@module("recoil")
+external useCallback: (
+  (Snapshot.t, . 'params) => 'result,
+  array<string>,
+) => Callback.fn<'params, 'result> = "useRecoilCallback"
 
 /**
  This hook synchronously returns a Snapshot object during rendering and
  subscribes the calling component for all Recoil state changes.
  */
-@bs.module("recoil")
+@module("recoil")
 external useSnapshot: unit => Snapshot.t = "useRecoilSnapshot"
 
 /**
  This hook returns a callback which takes a Snapshot as a parameter and
  will update the current <RecoilRoot> state to match this atom state.
  */
-@bs.module("recoil")
-external useGotoSnapshot: unit => (. Snapshot.t) => unit = "useGotoRecoilSnapshot"
+@module("recoil")
+external useGotoSnapshot: (unit, . Snapshot.t) => unit = "useGotoRecoilSnapshot"
 
 type transactionObserverCb = {
   snapshot: Snapshot.t,
@@ -165,8 +167,9 @@ type transactionObserverCb = {
  This hook subscribes a callback to be executed every time there is a change to Recoil atom state.
  Multiple updates may be batched together in a single transaction.
  */
-@bs.module("recoil")
-external useTransactionObserver: ((. transactionObserverCb) => unit) => unit = "useRecoilTransactionObserver_UNSTABLE"
+@module("recoil")
+external useTransactionObserver: ((. transactionObserverCb) => unit) => unit =
+  "useRecoilTransactionObserver_UNSTABLE"
 
 module Root = Recoil_Root
 module Observer = Recoil_Observer
