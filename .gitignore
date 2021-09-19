@@ -5,7 +5,14 @@ dist/
 lib/bs/
 node_modules/
 *.iml
-yarn-error.log
 .bsb.lock
-# Merlin configuring file for Vim and Emacs
 .merlin
+
+yarn-error.log
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
