@@ -1,4 +1,4 @@
-switch (ReactDOM.querySelector("app")) {
+switch (ReactDOM.querySelector("#app")) {
 | Some(root) =>
   ReactDOM.render(
     <Recoil.Root>
